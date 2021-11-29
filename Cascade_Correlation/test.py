@@ -1,9 +1,18 @@
 from CasCor import CasCor
-import numpy  as np 
+from sklearn.preprocessing import StandardScaler,MinMaxScaler
+from sklearn.model_selection import train_test_split
+import pandas as pd
 if __name__ == "__main__":
-    X = np.array([[1,2,3],[2,3,4],[4,5,6]])
-    Y = np.array([[1,2],[2,3],[3,4]])
+    data = pd.read_csv("MLDataset_quat.csv")
+    dataS = data.drop('Unnamed: 0',axis=1)
+    scaler = MinMaxScaler(feature_range=(0,1))
+    scaler.fit(dataS)
+    dataS = scaler.transform(dataS)
+    X = dataS[:,0:7]
+    Y = dataS[:,7:]
+    X_train,X_test,Y_train,Y_test = train_test_split(X,Y,test_size=0.1,random_state=0)
     net = CasCor(X.shape[1],Y.shape[1])
-    print(net.weights)
-    Z,A = net.forward(X)
-    print(Z)
+    net.train(X_train,Y_train,X_test,Y_test)    
+    print(net.train_loss)
+    print("Done \n")
+    print(net.test_loss)

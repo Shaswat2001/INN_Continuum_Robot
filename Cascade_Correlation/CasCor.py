@@ -2,30 +2,39 @@ import numpy as np
 import pandas as pd
 from utils import sigmoid,sigmoid_backward
 from hiddenLayer import HiddenLayer
-
+import math
 class CasCor():
 
     def __init__(self,input_size,output_size):
         self.I = input_size
         self.O = output_size
+        self.tp = 'xavier'
         self.weights = self.initialize()
+        
 
-        self.max_iteration = 30
-        self.max_iteration_io = 10
+        self.max_iteration = 50
+        self.max_iteration_io = 30
         self.train_loss = []
         self.test_loss = []
+        self.hidden_units = []
+        self.training_accuracy=[]
+        self.testing_accuracy=[]
         self.acceptable_loss = 0.001
         
         # Training hyperParameters
-        self.learning_rate = 0.01
+        self.learning_rate = 0.4
         self.activation = 'sigmoid'
         self.patience = 0.001
         self.miniBatch_size = 64
 
     def initialize(self):
 
-        weights = np.random.rand(self.O,self.I)
-        return weights
+        if self.tp == 'xavier':
+            value = 1/math.sqrt(self.I)
+            weight = np.random.uniform(-value,value,(self.O,self.I))
+        else:
+            weight = np.random.randn(self.O,self.I)
+        return weight
 
     def add_Data(self,X_train,X_test,Y_train,Y_test):
         self.X_train = X_train
@@ -70,7 +79,7 @@ class CasCor():
         return loss
     
     def backward_prop(self,X,y_true,y_pred):
-        grad = np.zeros(self.weights.shape[0])
+        grad = np.zeros(self.weights.shape)
 
         for i in range(y_true.shape[0]):
             delta = -(y_true[i]-y_pred[i])*sigmoid_backward(y_pred[i])
@@ -87,14 +96,51 @@ class CasCor():
         
         if iteration==self.max_iteration_io:
             self.converged = True
-        elif len(self.total_loss)>=2 and abs(self.total_loss[-1]-self.total_loss[-2])<self.patience:
+        elif len(self.train_loss)>=2 and abs(self.train_loss[-1]-self.train_loss[-2])<self.patience:
             self.converged = True
+        
+    def augment_input(self,xs,vs):
+        new_xs = np.zeros((xs.shape[0], xs.shape[1] + 1))
+        new_xs[:, :-1] = xs
+        new_xs[:, -1] = vs
+        
+        return new_xs
     
-    def addHiddenLayer(self):
-        pass
+    def addHiddenLayer(self,X,Y,losses):
 
-    def evaluateNetwork(self):
-        pass
+        candidates_pool = HiddenLayer(self.I, self.O, 5)
+        candidates_pool.train(X, losses)		
+        vs = candidates_pool.get_best_candidate_values(X)
+        xs = self.augment_input(X, vs)
+        
+        self.hidden_units.append(candidates_pool)
+        self.I += 1 	# just added one more element for each input, so the size fo the input has increased
+
+        new_weights = self.initialize()
+        new_weights[:, :-1] = self.weights
+        self.weights = new_weights
+        
+        return xs
+
+    def calculate_accuracy(self,y_true,y_pred):
+        error = (y_true-y_pred)/y_true
+        error = np.sum(abs(error))/(y_true.shape[0]*y_true.shape[1])*100
+        return error
+
+    def evaluateNetwork(self,X,Y,X_test,Y_test):
+
+        _,vs = self.forward(X)
+        error_train = self.calculate_accuracy(Y,vs)
+        loss = self.cost_calculation(Y,vs)
+        self.train_loss.append(loss)
+        self.training_accuracy.append(error_train)
+        
+        _,vs = self.forward(X_test)
+        error_test = self.calculate_accuracy(Y_test,vs)
+        loss = self.cost_calculation(Y_test,vs)
+        self.test_loss.append(loss)
+        self.testing_accuracy.append(error_test)
+
 
     def plotLoss(self,loss):
         pass
@@ -113,8 +159,8 @@ class CasCor():
                 gradient = self.backward_prop(mini_X,mini_Y,vs)
                 self.update_weights(gradient)
             
-            self.evaluateNetwork(self,X_test,Y_test)
             self.train_loss.append(total_loss/len(minibatch))
+            self.evaluateNetwork(X,Y,X_test,Y_test)
             self.check_convergence(itr)
             itr+=1
             
@@ -135,8 +181,8 @@ class CasCor():
 
             if itr == self.max_iteration:
                 break
-                
-            self.addHiddenLayer()
+            itr+=1
+            X = self.addHiddenLayer(X,Y,losses)
             
 
     
