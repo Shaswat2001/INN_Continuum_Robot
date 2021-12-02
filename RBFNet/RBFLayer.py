@@ -24,18 +24,18 @@ class RBFLayer(Layer):
         self.initializer = initializer
         super(RBFLayer,self).__init__(**kwargs)
     
-    def build(self,input_dim):
+    def build(self,input_shape):
 
-        self.centers = self.add_weight("centers",shape=(self.output_dim,input_dim),initializer=self.initializer,trainable=True)
-        self.betas = self.add_weight("betas",shape=(self.output_dim,),initializer=Constant(value=self.betas),trainable=True)
+        self.centers = self.add_weight("centers",shape=(self.output_dim,input_shape[1]),initializer=self.initializer,trainable=True)
+        self.betas = self.add_weight("betas",shape=(self.output_dim,1),initializer=Constant(value=self.betas),trainable=True)
 
-        super(RBFLayer,self).build(input_dim)
+        super(RBFLayer,self).build(input_shape)
     
     def call(self,X):
         CTR = K.expand_dims(self.centers)
-        Distance = K.sum(K.transpose(X)-CTR,axis=1)
+        Distance = K.sum(K.square(K.transpose(X)-CTR),axis=1)
         return K.exp(K.transpose((-self.betas*Distance)))
     
-    def compute_output_shape(self,input_dim):
-        return(self.output_dim,)
+    def compute_output_shape(self,input_shape):
+        return(input_shape[0],self.output_dim)
 
