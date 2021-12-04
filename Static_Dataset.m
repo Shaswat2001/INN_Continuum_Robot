@@ -1,10 +1,10 @@
-function Static_Dataset
+function solution = Static_Dataset
     E = 83e9;
     pratio=0.33;
     G = E/(2*(1+pratio)); % have to find correct value
     pho = 6450;
     g = [0;0;9.81];
-    rad = 0.0025;
+    rad = 0.0015;
     tendonOffset = 0.02;
     L = 0.34;
     noTendons = 4;
@@ -13,13 +13,23 @@ function Static_Dataset
     I = pi*rad^4/4;
     J = 2*I;
     Kse = diag([G*Area,G*Area,E*Area]);
-    Kbt = diag([E*I,E*I,E*J]);
+    Kbt = diag([E*I,E*I,G*J]);
     initial_guess = zeros(6,1);
     tau = [1;1;1;1];
     p0 = [0;0;0];
     R0 = eye(3);
     r = [tendonDistance(0) tendonDistance(pi/2) tendonDistance(pi) tendonDistance(3*pi/2)];
+    solution = [];
     global Y
+    
+    noSamples = 10000;
+    Trq = randi([8,20],[noSamples,4]);
+    solution = zeros(noSamples,12);
+    for Tq=1:noSamples
+        tau = Trq(Tq,:);
+        fsolve(@staticCalculation,initial_guess)
+        solution(Tq,:)=Y(end,1:12);
+    end
     fsolve(@staticCalculation,initial_guess)
     
     function y_s = CosseratStaticModel(s,y)
@@ -56,13 +66,14 @@ function Static_Dataset
         
         f = pho*Area*g;
         KSBT = [Kse+A Gv;
-                B Kbt+H];
+                Gv.' Kbt+H];
         rhs = [-hat(u)*n-R.'*f-a;
                -hat(u)*m-hat(v)*n-b];
         
         v_u_sys = KSBT\rhs;
         p = R*v;
         Rdot = R*hat(u);
+        
         
         y_s = [p;reshape(Rdot,9,1);v_u_sys];
     end
@@ -74,7 +85,6 @@ function Static_Dataset
         
         y0 = [p0;reshape(R0,9,1);v0;u0];
         [~,Y] = ode45(@CosseratStaticModel,linspace(0,L),y0);
-        disp(Y(end,1:3))
         vL = Y(end,13:15).';
         uL = Y(end,16:18).';
         
