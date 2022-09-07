@@ -82,7 +82,7 @@ To add invertibilty to the neural networks we make use of coupling layers which 
 To test the INN model, 20000 random tendon tensions are taken. The output of the network is taken as the end effector position and orientation in quaternions. To improve the accuracy of the model and speed up the training process, dataset is normalized between 0 and 1. The network is trained on 97% of the dataset. The Invertible Neural Network was trained for 1000 iterations. The Inverse loss can be observed to be significantly close to the forward loss as shown - 
 
 <p align="center">
-<img src="./assets/Loss.png" width="200" alt="static_work">
+<img src="./assets/loss.svg" width="400" alt="static_work">
 </p>
 
 ## Benchmarking INN
