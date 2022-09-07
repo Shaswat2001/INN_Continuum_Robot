@@ -67,6 +67,23 @@ Owing to the experimental accuracy of Static Models compared to the PCC method, 
 <a href="https://arxiv.org/abs/1808.04730">Invertible Neural Networks</a> make use of a latent variables $z$ to learn the forward process, and provide the full posterior over the parameter space. Latent output variables $z$ are used to prevent information loss in the forward pass, by learning information about $x$ that is not represented in $y$. Hence, the network optimizes a supervised loss for $y$ and unsupervised loss for $z$ to
 associate the parameters $x$ with unique pairs of $[y, z]$ target and latent variables. The network architecture is shown in below figure - 
 
+<p align="center">
+<img src="./assets/INN.png" width="300" alt="static_work">
+</p>
+
+To add invertibilty to the neural networks we make use of coupling layers which are shown in figure below. Affine coupling layers enable the flow transformation as the affine transformation is invertible and the Jacobian is easy to compute.
+
+<p align="center">
+<img src="./assets/Coupling.png" width="400" alt="static_work">
+</p>
+
+## Training INNs
+
+To test the INN model, 20000 random tendon tensions are taken. The output of the network is taken as the end effector position and orientation in quaternions. To improve the accuracy of the model and speed up the training process, dataset is normalized between 0 and 1. The network is trained on 97% of the dataset. The Invertible Neural Network was trained for 1000 iterations. The Inverse loss can be observed to be significantly close to the forward loss as shown - 
+
+<p align="center">
+<img src="./assets/Loss.png" width="200" alt="static_work">
+</p>
 
 ## Benchmarking INN
 
