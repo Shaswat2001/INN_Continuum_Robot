@@ -18,4 +18,10 @@ challenging. Thus, we present a static model based on cosserat rod theory and st
 We propose an invertible neural network to represent inverse kinematics. This repository contains implementation for our work "Inverse Kinematics 
 of Tendon Driven Continuum Robots using Invertible Neural Network" published in <a href = "http://www.icca.net">CompAuto 2022</a>.
 
+## Motion Planning Demo - 
+
+The INN trained was tested by controling the robot on a circle trajectory of radius = 45 mm and height = 397 mm. The motion of the robot is shown in the below video - 
+
+
+
 
