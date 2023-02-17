@@ -15,8 +15,8 @@
 Inverse Kinematics is one of the most crucial problems in robotics, needed to map configuration space to joint space to facilitate smooth motion 
 while performing any task. Owing to the kinematic redundancy and non-linearities in the continuum robots, Inverse Kinematics is relatively
 challenging. Thus, we present a static model based on cosserat rod theory and string theory to represent a tendon driven continuum robot. 
-We propose an invertible neural network to represent inverse kinematics. This repository contains implementation for our work "Inverse Kinematics 
-of Tendon Driven Continuum Robots using Invertible Neural Network" published in <a href = "http://www.icca.net">CompAuto 2022</a>.
+We propose an invertible neural network to represent inverse kinematics. This repository contains implementation for our work <a href="https://ieeexplore.ieee.org/abstract/document/10027047">**Inverse Kinematics 
+of Tendon Driven Continuum Robots using Invertible Neural Network**</a> published in <a href = "http://www.icca.net">CompAuto 2022</a>.
 
 ## Motion Planning Demo - 
 
@@ -97,6 +97,23 @@ To validate the efficacy and accuracy of our proposed network, 5 previous models
 | ELM  | 1.76  | 1.84  | 5.85  |
 | Decision Tree  | 1.17  | 1.97  | 11  |
 | **INN**  | **0.0058**  | **0.09**  | **4.13**  |
+
+## Citation
+
+I would appreciate if you cite my work, in case you are using it for your work. Thank you :-)
+
+```python
+
+@inproceedings{garg2022inverse,
+  title={Inverse Kinematics of Tendon Driven Continuum Robots Using Invertible Neural Network},
+  author={Garg, Shaswat and Dudeja, Satwik and Rastogi, Vikas},
+  booktitle={2022 2nd International Conference on Computers and Automation (CompAuto)},
+  pages={82--86},
+  year={2022},
+  organization={IEEE}
+}
+
+```
 
 ## Contact
 
